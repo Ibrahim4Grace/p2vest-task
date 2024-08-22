@@ -2,6 +2,8 @@
 
 ## Overview
 
+## swagger documentation on http://localhost:8000/api/docs/#/
+
 [Description]
 
 ## Folder Structure
