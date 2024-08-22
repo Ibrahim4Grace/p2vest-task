@@ -1,12 +1,5 @@
-import {
-  Entity,
-  Column,
-  ManyToOne,
-  OneToMany,
-  OneToOne,
-  JoinColumn,
-} from 'typeorm';
-import { Task, Comment, Notification } from '../models';
+import { Entity, Column, OneToMany } from 'typeorm';
+import { Task, Comment } from '../models';
 import { IsEmail } from 'class-validator';
 import { getIsInvalidMessage } from '../utils';
 import ExtendedBaseEntity from '../base-entity';
@@ -39,9 +32,6 @@ class User extends ExtendedBaseEntity {
 
   @OneToMany(() => Comment, (comment) => comment.user)
   comments: Comment[];
-
-  @OneToMany(() => Notification, (notification) => notification.user)
-  notifications: Notification[];
 
   @Column({
     type: 'varchar',
