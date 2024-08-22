@@ -1,53 +1,80 @@
-const createCommentDocs = `
-
+export const createCommentDocs = `
 /**
  * @swagger
- * /comments:
+ * /api/v1/comments:
  *   post:
- *     summary: Add a comment to a task
- *     description: Adds a comment to a task.
- *     tags:
- *       - Comments
+ *     summary: Add a new comment to a task
+ *     tags: [Comments]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
+ *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
  *             properties:
- *               content:
- *                 type: string
- *                 example: "This is a comment"
  *               taskId:
  *                 type: string
- *                 example: "task-id"
+ *                 example: "task-uuid"
+ *               content:
+ *                 type: string
+ *                 example: "This is a comment on the task."
  *     responses:
  *       201:
- *         description: Comment successfully added
- *       400:
- *         description: Invalid input
- *       404:
- *         description: Task not found
+ *         description: Comment added successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   example: 201
+ *                 message:
+ *                   type: string
+ *                   example: Comment added successfully
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     comment:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: string
+ *                         content:
+ *                           type: string
+ *                         created_at:
+ *                           type: string
+ *                         task:
+ *                           type: string
+ *                         user:
+ *                           type: string
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Some server error
  */
 `;
 
-const updateCommentDocs = `
-
+export const updateCommentDocs = `
 /**
  * @swagger
- * /comments/{commentId}:
+ * /api/v1/comments/{commentId}:
  *   put:
- *     summary: Edit a comment
- *     description: Edits a comment by its ID.
- *     tags:
- *       - Comments
+ *     summary: Edit an existing comment
+ *     tags: [Comments]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
- *       - name: commentId
- *         in: path
- *         description: The ID of the comment to edit
+ *       - in: path
+ *         name: commentId
  *         required: true
  *         schema:
  *           type: string
+ *         description: The ID of the comment to edit
  *     requestBody:
+ *       required: true
  *       content:
  *         application/json:
  *           schema:
@@ -55,40 +82,82 @@ const updateCommentDocs = `
  *             properties:
  *               content:
  *                 type: string
- *                 example: "Updated comment"
+ *                 example: "Updated comment content."
  *     responses:
  *       200:
- *         description: Comment successfully updated
- *       400:
- *         description: Invalid input
+ *         description: Comment updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: Comment updated successfully
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     comment:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: string
+ *                         content:
+ *                           type: string
+ *                         created_at:
+ *                           type: string
+ *                         task:
+ *                           type: string
+ *                         user:
+ *                           type: string
+ *       401:
+ *         description: Unauthorized
  *       404:
  *         description: Comment not found
+ *       500:
+ *         description: Some server error
  */
+
 `;
 
-const deleteCommentDocs = `
-
+export const deleteCommentDocs = `
 /**
  * @swagger
- * /comments/{commentId}:
+ * /api/v1/comments/{commentId}:
  *   delete:
- *     summary: Delete a comment
- *     description: Deletes a comment by its ID. Admins can delete any comment, users can only delete their own comments.
- *     tags:
- *       - Comments
+ *     summary: Delete an existing comment
+ *     tags: [Comments]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
- *       - name: commentId
- *         in: path
- *         description: The ID of the comment to delete
+ *       - in: path
+ *         name: commentId
  *         required: true
  *         schema:
  *           type: string
+ *         description: The ID of the comment to delete
  *     responses:
  *       200:
- *         description: Comment successfully deleted
- *       400:
- *         description: Invalid input
+ *         description: Comment deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: Comment deleted successfully
+ *       401:
+ *         description: Unauthorized
  *       404:
- *         description: Comment not found
+ *         description: Comment not found or unauthorized
+ *       500:
+ *         description: Some server error
  */
 `;

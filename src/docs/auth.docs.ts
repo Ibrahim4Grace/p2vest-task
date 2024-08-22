@@ -1,4 +1,4 @@
-const signupDocs = `
+export const signupDocs = `
 /**
  * @swagger
  * /api/v1/auth/register:
@@ -21,9 +21,6 @@ const signupDocs = `
  *               password:
  *                 type: string
  *                 example: strongpassword123
- *               admin_secret:
- *                 type: string
- *                 example: supersecretkey123
  *     responses:
  *       201:
  *         description: The user was successfully created
@@ -37,10 +34,7 @@ const signupDocs = `
  *                   example: 201
  *                 message:
  *                   type: string
- *                   example: User Created Successfully, Kindly check your mail for your verification token
- *                 status_code:
- *                   type: number
- *                   example: 201
+ *                   example: User Created Successfully
  *                 data:
  *                   type: object
  *                   properties:
@@ -57,12 +51,11 @@ const signupDocs = `
  *                           type: string
  *                         created_at:
  *                           type: string
- *                         image_url:
- *                           type: string
  *                         role:
  *                           type: string
  *                 access_token:
  *                   type: string
+ *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
  *       409:
  *         description: User already exists
  *       500:
@@ -70,13 +63,12 @@ const signupDocs = `
  */
 `;
 
-const loginDocs = `
-
+export const loginDocs = `
 /**
  * @swagger
  * /api/v1/auth/login:
  *   post:
- *     summary: Sign up a new user
+ *     summary: Log in an existing user
  *     tags: [Authentication]
  *     requestBody:
  *       required: true
@@ -91,10 +83,9 @@ const loginDocs = `
  *               password:
  *                 type: string
  *                 example: strongpassword123
- *
  *     responses:
  *       200:
- *         description: The user was successfully created
+ *         description: Login successful
  *         content:
  *           application/json:
  *             schema:
@@ -105,10 +96,7 @@ const loginDocs = `
  *                   example: 200
  *                 message:
  *                   type: string
- *                   example: Login Successfull,
- *                 status_code:
- *                   type: number
- *                   example: 200
+ *                   example: Login successful
  *                 data:
  *                   type: object
  *                   properties:
@@ -125,16 +113,13 @@ const loginDocs = `
  *                           type: string
  *                         created_at:
  *                           type: string
- *                         image_url:
- *                           type: string
  *                         role:
  *                           type: string
  *                 access_token:
  *                   type: string
- *       400:
- *         description: Invalid email or password
- *       404:
- *         description: User not found
+ *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *       401:
+ *         description: Invalid credentials
  *       500:
  *         description: Some server error
  */

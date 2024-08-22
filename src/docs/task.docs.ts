@@ -1,115 +1,166 @@
-const createTaskDocs = `
+export const createTaskDocs = `
 /**
  * @swagger
- * tags:
- *   name: Tasks
- *   description: Task management endpoints
- */
-
-/**
- * @swagger
- * /tasks:
+ * /api/v1/tasks:
  *   post:
  *     summary: Create a new task
  *     tags: [Tasks]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/CreateTask'
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 example: "Implement new feature"
+ *               description:
+ *                 type: string
+ *                 example: "Implement a new feature in the application"
+ *               dueDate:
+ *                 type: string
+ *                 format: date-time
+ *                 example: "2024-08-30T18:00:00Z"
+ *               status:
+ *                 type: string
+ *                 enum: [To-Do, In Progress, Completed]
+ *                 example: "To-Do"
+ *               assignedTo:
+ *                 type: string
+ *                 description: "UUID of the user to whom the task is assigned"
+ *                 example: "user-uuid"
  *     responses:
  *       201:
  *         description: Task created successfully
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Task'
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   example: 201
+ *                 message:
+ *                   type: string
+ *                   example: Task created successfully
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     task:
+ *                       $ref: '#/components/schemas/Task'
+ *       401:
+ *         description: Unauthorized
  *       500:
- *         description: Server error
+ *         description: Some server error
  */
+
 `;
 
-const updateTaskDocs = `
+export const updateTaskDocs = `
 /**
  * @swagger
- * /tasks/{taskId}/status:
+ * /api/v1/tasks/{id}/status:
  *   put:
  *     summary: Update the status of a task
  *     tags: [Tasks]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: taskId
+ *         name: id
+ *         required: true
  *         schema:
  *           type: string
- *         required: true
  *         description: The ID of the task to update
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/UpdateTaskStatus'
+ *             type: object
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 enum: [To-Do, In Progress, Completed]
+ *                 example: "In Progress"
  *     responses:
- *       200:
- *         description: Task status updated successfully
+ *       201:
+ *         description: Task successfully updated
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Task'
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   example: 201
+ *                 message:
+ *                   type: string
+ *                   example: Task successfully updated
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     task:
+ *                       $ref: '#/components/schemas/Task'
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Task not found
  *       500:
- *         description: Server error
+ *         description: Some server error
  */
+
 `;
 
-const getTaskDocs = `
+export const getTaskDocs = `
 
 /**
  * @swagger
- * /tasks:
+ * /api/v1/tasks:
  *   get:
- *     summary: Get tasks with pagination and sorting
- *     description: Retrieve tasks with pagination and sorting options.
- *     tags:
- *       - Tasks
+ *     summary: Get a list of tasks with pagination, sorting, and filtering
+ *     tags: [Tasks]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
- *       - name: page
- *         in: query
- *         description: Page number for pagination
- *         required: false
+ *       - in: query
+ *         name: page
  *         schema:
  *           type: integer
- *           default: 1
- *       - name: limit
- *         in: query
- *         description: Number of tasks per page
- *         required: false
+ *           example: 1
+ *         description: The page number for pagination
+ *       - in: query
+ *         name: limit
  *         schema:
  *           type: integer
- *           default: 10
- *       - name: sortBy
- *         in: query
- *         description: Field to sort by (e.g., 'due_date')
- *         required: false
+ *           example: 10
+ *         description: The number of tasks per page
+ *       - in: query
+ *         name: sortBy
  *         schema:
  *           type: string
- *           default: due_date
- *       - name: order
- *         in: query
- *         description: Sort order ('ASC' or 'DESC')
- *         required: false
+ *           example: "due_date"
+ *         description: The field to sort tasks by
+ *       - in: query
+ *         name: order
  *         schema:
  *           type: string
- *           default: ASC
- *       - name: status
- *         in: query
- *         description: Filter by task status
- *         required: false
+ *           enum: [ASC, DESC]
+ *           example: "ASC"
+ *         description: The order to sort tasks (ASC or DESC)
+ *       - in: query
+ *         name: status
  *         schema:
  *           type: string
+ *           enum: [To-Do, In Progress, Completed]
+ *           example: "In Progress"
+ *         description: Filter tasks by status
  *     responses:
  *       200:
- *         description: List of tasks with pagination and sorting
+ *         description: A list of tasks with pagination information
  *         content:
  *           application/json:
  *             schema:
@@ -120,106 +171,134 @@ const getTaskDocs = `
  *                   items:
  *                     $ref: '#/components/schemas/Task'
  *                 total:
- *                   type: integer
+ *                   type: number
+ *                   example: 25
  *                 page:
- *                   type: integer
+ *                   type: number
+ *                   example: 1
  *                 totalPages:
- *                   type: integer
- *       400:
- *         description: Invalid input
+ *                   type: number
+ *                   example: 3
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Some server error
  */
 `;
 
-const getTaskByIdDocs = `
-
+export const getTaskByIdDocs = `
 /**
  * @swagger
- * /tasks/user/{userId}:
+ * /api/v1/tasks/user/{userId}:
  *   get:
- *     summary: Get tasks assigned to a specific user
- *     description: Retrieves tasks assigned to a specific user based on their user ID. Accessible by users and admins.
- *     tags:
- *       - Tasks
+ *     summary: Get all tasks assigned to a specific user
+ *     tags: [Tasks]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
- *       - name: userId
- *         in: path
- *         description: The ID of the user to retrieve tasks for
+ *       - in: path
+ *         name: userId
  *         required: true
  *         schema:
  *           type: string
+ *           format: uuid
+ *         description: The ID of the user whose tasks are being retrieved
  *     responses:
- *       200:
- *         description: Tasks successfully retrieved
+ *       201:
+ *         description: Task successfully found
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
- *                 tasks:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/Task'
+ *                 status:
+ *                   type: number
+ *                   example: 201
+ *                 message:
+ *                   type: string
+ *                   example: Task successfully found
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     tasks:
+ *                       type: array
+ *                       items:
+ *                         $ref: '#/components/schemas/Task'
  *       401:
- *         description: Unauthorized access
- *       403:
- *         description: Forbidden access
+ *         description: Unauthorized
  *       404:
- *         description: Tasks not found for the specified user ID
- *     security:
- *       - BearerAuth: []
+ *         description: User not found
+ *       500:
+ *         description: Some server error
  */
 `;
 
-const addTagToTaskDocs = `
+export const addTagToTaskDocs = `
 /**
  * @swagger
- * /tasks/{taskId}/tags:
+ * /api/v1/tasks/{taskId}/tag:
  *   post:
- *     summary: Add tags to a task
- *     description: Adds tags to a specific task by its ID.
- *     tags:
- *       - Tasks
+ *     summary: Add a tag to a task
+ *     tags: [Tasks]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
- *       - name: taskId
- *         in: path
- *         description: The ID of the task to which tags will be added
+ *       - in: path
+ *         name: taskId
  *         required: true
  *         schema:
  *           type: string
- *       - name: tags
- *         in: body
- *         description: An array of tag IDs to be added to the task
- *         required: true
- *         schema:
- *           type: array
- *           items:
- *             type: string
+ *           format: uuid
+ *         description: The ID of the task to which the tag is being added
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               tag:
+ *                 type: string
+ *                 example: "Urgent"
  *     responses:
  *       200:
- *         description: Tags successfully added to the task
- *       400:
- *         description: Invalid input
+ *         description: Tag successfully added to the task
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: number
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: Tag "Urgent" successfully added to the task
+ *       401:
+ *         description: Unauthorized
  *       404:
- *         description: Task or tags not found
+ *         description: Task not found
+ *       500:
+ *         description: Some server error
  */
 `;
 
-const fliterTaskByTagDocs = `
+export const fliterTaskByTagDocs = `
 /**
  * @swagger
- * /tasks/filter:
+ * /api/v1/tasks/filter:
  *   get:
  *     summary: Filter tasks by tag
- *     description: Retrieves tasks filtered by a specific tag name.
- *     tags:
- *       - Tasks
+ *     tags: [Tasks]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
- *       - name: tagName
- *         in: query
- *         description: The name of the tag to filter tasks by
+ *       - in: query
+ *         name: tagName
  *         required: true
  *         schema:
  *           type: string
+ *         description: The name of the tag to filter tasks by
  *     responses:
  *       200:
  *         description: Tasks successfully retrieved
@@ -228,11 +307,24 @@ const fliterTaskByTagDocs = `
  *             schema:
  *               type: object
  *               properties:
- *                 tasks:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/Task'
+ *                 status:
+ *                   type: number
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: Tasks successfully retrieved
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     tasks:
+ *                       type: array
+ *                       items:
+ *                         $ref: '#/components/schemas/Task'
  *       404:
  *         description: No tasks found for the specified tag
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Some server error
  */
 `;
